@@ -1,0 +1,26 @@
+WITH first AS
+(
+  SELECT age_bucket,
+    DATE_trunc('week', timestamp) week_timestamp,
+    COUNT(DISTINCT id) count_id
+  FROM
+    table
+    where timestamp >='12/06/2020'
+and timestamp <='12/13/2020'
+  GROUP BY
+    1,2
+  )
+ 
+ SELECT a.age_bucket,
+    a.week_timestamp previous_week,
+    a.count_id previous_count_id,
+   b.week_timestamp current_week,
+   b.count_id current_count_id,
+    ROUND(100.0*(b.count_id - a.count_id)/a.count_id,2) AS percent_change,
+    b.count_id - a.count_id number_change
+ FROM
+    first a
+ JOIN
+    first b ON a.week_timestamp = b.week_timestamp - interval '1 week'
+
+    order by 2 asc
